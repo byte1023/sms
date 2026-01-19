@@ -28,13 +28,27 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
+    // 安全获取 API Key
+    const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : '';
+    
+    if (!apiKey) {
+      const userText = input.trim();
+      setInput('');
+      setMessages(prev => [
+        ...prev, 
+        { role: 'user', content: userText },
+        { role: 'assistant', content: '抱歉，本地环境未配置 API_KEY 环境变量，AI 功能暂时不可用。' }
+      ]);
+      return;
+    }
+
     const userMsg = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: userMsg,
@@ -54,7 +68,7 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
       setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
     } catch (error) {
       console.error('AI Error:', error);
-      setMessages(prev => [...prev, { role: 'assistant', content: '连接出了一点小状况，建议您直接拨打我们的 400 咨询热线。' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: '连接出了一点小状况，建议您直接联系我们的官方客服。' }]);
     } finally {
       setIsLoading(false);
     }
