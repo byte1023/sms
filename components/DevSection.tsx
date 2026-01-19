@@ -1,7 +1,12 @@
 
 import React from 'react';
 
-const DevSection: React.FC = () => {
+interface DevSectionProps {
+  onDocs: () => void;
+  onApi: () => void;
+}
+
+const DevSection: React.FC<DevSectionProps> = ({ onDocs, onApi }) => {
   return (
     <section id="dev" className="py-24 bg-slate-900 text-white overflow-hidden relative">
       <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
@@ -37,8 +42,8 @@ const DevSection: React.FC = () => {
           </ul>
 
           <div className="flex gap-4">
-            <button className="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all">快速开始</button>
-            <button className="text-slate-400 hover:text-white transition-all font-medium">查看 API 规范 →</button>
+            <button onClick={onDocs} className="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition-all">快速开始</button>
+            <button onClick={onApi} className="text-slate-400 hover:text-white transition-all font-medium">查看 API 规范 →</button>
           </div>
         </div>
 

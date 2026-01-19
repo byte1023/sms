@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -9,24 +9,42 @@ import DevSection from './components/DevSection';
 import UseCases from './components/UseCases';
 import Footer from './components/Footer';
 import AIAssistant from './components/AIAssistant';
+import SubPage from './components/SubPage';
+
+export type PageType = 'home' | 'docs' | 'api' | 'company' | 'legal' | 'privacy';
 
 const App: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [isAiOpen, setIsAiOpen] = useState(false);
+
+  // 模拟路由：当点击链接时切换页面并回到顶部
+  const navigateTo = (page: PageType) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="relative min-h-screen">
-      <Navbar />
-      <main>
-        <Hero />
-        <Stats />
-        <Features />
-        <UseCases />
-        <DevSection />
-        <Pricing />
-      </main>
-      <Footer />
+      <Navbar onNavigate={navigateTo} />
       
-      {/* Floating Action Button for AI Help */}
+      <main>
+        {currentPage === 'home' ? (
+          <>
+            <Hero onStart={() => navigateTo('docs')} />
+            <Stats />
+            <Features />
+            <UseCases />
+            <DevSection onDocs={() => navigateTo('docs')} onApi={() => navigateTo('api')} />
+            <Pricing />
+          </>
+        ) : (
+          <SubPage type={currentPage} onBack={() => navigateTo('home')} />
+        )}
+      </main>
+      
+      <Footer onNavigate={navigateTo} />
+      
+      {/* AI Assistant FAB */}
       <button 
         onClick={() => setIsAiOpen(!isAiOpen)}
         className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-2xl hover:bg-blue-700 transition-all z-50 flex items-center gap-2 group"
